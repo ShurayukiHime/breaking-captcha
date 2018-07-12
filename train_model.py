@@ -2,12 +2,14 @@ import cv2
 import pickle
 import os.path
 import numpy as np
+import matplotlib.pyplot as plt
 from imutils import paths
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.model_selection import train_test_split
 from keras.models import Sequential
 from keras.layers.convolutional import Conv2D, MaxPooling2D
 from keras.layers.core import Flatten, Dense
+from keras.preprocessing.image import ImageDataGenerator
 from helpers import resize_to_fit
 
 
@@ -53,7 +55,7 @@ Y_train = lb.transform(Y_train)
 Y_test = lb.transform(Y_test)
 
 # Save the mapping from labels to one-hot encodings.
-# We'll need this later when we use the model to decode what it's predictions mean
+# We'll need this later when we use the model txo decode what it's predictions mean
 with open(MODEL_LABELS_FILENAME, "wb") as f:
     pickle.dump(lb, f)
 
@@ -78,8 +80,39 @@ model.add(Dense(32, activation="softmax"))
 # Ask Keras to build the TensorFlow model behind the scenes
 model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
 
+# ADDITION
+shift = 0.2
+datagen = ImageDataGenerator(rotation_range=15, width_shift_range=shift, height_shift_range=shift)
+
+datagen.fit(X_train)
+
 # Train the neural network
-model.fit(X_train, Y_train, validation_data=(X_test, Y_test), batch_size=32, epochs=10, verbose=1)
+epochs = 10
+#history = model.fit(X_train, Y_train, validation_data=(X_test, Y_test), batch_size=32, epochs=10, verbose=1)
+#history = model.fit_generator(generator, steps_per_epoch=None, epochs=10, verbose=1, validation_data=(X_test, Y_test))
+history = model.fit_generator(datagen.flow(X_train, Y_train, batch_size=32), steps_per_epoch=len(X_train) / 32, epochs=epochs)
 
 # Save the trained model to disk
 model.save(MODEL_FILENAME)
+
+# ADDITION
+print(history.history.keys())
+
+#  "Accuracy"
+plt.plot(history.history['acc'])
+plt.plot(history.history['val_acc'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'validation'], loc='upper left')
+plt.show()
+# "Loss"
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'validation'], loc='upper left')
+plt.show()
+
+

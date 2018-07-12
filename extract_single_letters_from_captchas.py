@@ -44,6 +44,7 @@ for (i, captcha_image_file) in enumerate(captcha_image_files):
     # inside of each one
     for contour in contours:
         # Get the rectangle that contains the contour
+        # (x,y) is the top-left coordinate of the rectangle and (w,h) its width and height.
         (x, y, w, h) = cv2.boundingRect(contour)
 
         # Compare the width and height of the contour to detect letters that
