@@ -5,12 +5,16 @@ import numpy as np
 import imutils
 import cv2
 import pickle
+import os
+import glob
 
 
 MODEL_FILENAME = "captcha_model.hdf5"
 MODEL_LABELS_FILENAME = "model_labels.dat"
-CAPTCHA_IMAGE_FOLDER = "generated_captcha_images"
-
+#CAPTCHA_IMAGE_FOLDER = "generated_captcha_images"
+CAPTCHA_IMAGE_FOLDER = "sampled_captcha_images"
+count = 0
+qs = 0
 
 # Load up the model labels (so we can translate model predictions to actual letters)
 with open(MODEL_LABELS_FILENAME, "rb") as f:
@@ -22,13 +26,15 @@ model = load_model(MODEL_FILENAME)
 # Grab some random CAPTCHA images to test against.
 # In the real world, you'd replace this section with code to grab a real
 # CAPTCHA image from a live website.
-captcha_image_files = list(paths.list_images(CAPTCHA_IMAGE_FOLDER))
-captcha_image_files = np.random.choice(captcha_image_files, size=(10,), replace=False)
+
+image_captchas = glob.glob(os.path.join(CAPTCHA_IMAGE_FOLDER, "*"))
 
 # loop over the image paths
-for image_file in captcha_image_files:
+for image_captcha in image_captchas:
     # Load the image and convert it to grayscale
-    image = cv2.imread(image_file)
+    filename1 = os.path.basename(image_captcha)
+    captcha_correct_textt = os.path.splitext(filename1)[0]
+    image = cv2.imread(image_captcha)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # Add some extra padding around the image
@@ -77,7 +83,7 @@ for image_file in captcha_image_files:
     output = cv2.merge([image] * 3)
     predictions = []
 
-    # loop over the lektters
+    # loop over the letters
     for letter_bounding_box in letter_image_regions:
         # Grab the coordinates of the letter in the image
         x, y, w, h = letter_bounding_box
@@ -105,8 +111,13 @@ for image_file in captcha_image_files:
 
     # Print the captcha's text
     captcha_text = "".join(predictions)
-    print("CAPTCHA text is: {}".format(captcha_text))
+    if captcha_correct_textt != format(captcha_text):
+        count = count+1
+        print(captcha_correct_textt + format(captcha_text))
+        if "Q" not in captcha_text and "Q" in captcha_correct_textt:
+            qs = qs+1
 
-    # Show the annotated image
-    cv2.imshow("Output", output)
-    cv2.waitKey()
+# Show the annotated image
+print("CAPTCHA text is: {}".format(captcha_text))
+print("Number of incorrect predictions: ", count)
+print("wrong qs: ", qs)

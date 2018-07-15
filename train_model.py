@@ -70,9 +70,9 @@ model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
 model.add(Conv2D(50, (5, 5), padding="same", activation="relu"))
 model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
 
-# Hidden layer with 500 nodes
+# Hidden layer with 300 nodes
 model.add(Flatten())
-model.add(Dense(500, activation="relu"))
+model.add(Dense(300, activation="relu"))
 
 # Output layer with 32 nodes (one for each possible letter/number we predict)
 model.add(Dense(32, activation="softmax"))
@@ -80,18 +80,9 @@ model.add(Dense(32, activation="softmax"))
 # Ask Keras to build the TensorFlow model behind the scenes
 model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
 
-# ADDITION
-shift = 0.2
-datagen = ImageDataGenerator(rotation_range=15, width_shift_range=shift, height_shift_range=shift)
-
-datagen.fit(X_train)
-
 # Train the neural network
 epochs = 10
-#history = model.fit(X_train, Y_train, validation_data=(X_test, Y_test), batch_size=32, epochs=10, verbose=1)
-#history = model.fit_generator(generator, steps_per_epoch=None, epochs=10, verbose=1, validation_data=(X_test, Y_test))
-history = model.fit_generator(datagen.flow(X_train, Y_train, batch_size=32), steps_per_epoch=len(X_train) / 32, epochs=epochs)
-
+history = model.fit(X_train, Y_train, validation_data=(X_test, Y_test), batch_size=32, epochs=10, verbose=1)
 # Save the trained model to disk
 model.save(MODEL_FILENAME)
 

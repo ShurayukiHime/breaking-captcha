@@ -3,14 +3,31 @@ import os.path
 import cv2
 import glob
 import imutils
+from sklearn.model_selection import train_test_split
 
 
 CAPTCHA_IMAGE_FOLDER = "generated_captcha_images"
 OUTPUT_FOLDER = "extracted_letter_images"
-
+PREDICTION_FOLDER = "sampled_captcha_images"
 
 # Get a list of all the captcha images we need to process
-captcha_image_files = glob.glob(os.path.join(CAPTCHA_IMAGE_FOLDER, "*"))
+image_captchas = glob.glob(os.path.join(CAPTCHA_IMAGE_FOLDER, "*"))
+
+# We are sampling from the whole test some examples to feed the trained network to assess prediction accuracy, so that this examples are not used in training nor in validation, as are unseen at prediction time
+captcha_image_files, prediction_samples = train_test_split(image_captchas, test_size=0.15, random_state=0)
+if not os.path.exists(PREDICTION_FOLDER):
+  os.makedirs(PREDICTION_FOLDER)
+  
+print(len(captcha_image_files))
+print(len(prediction_samples))
+ 
+for (i, prediction_sample) in enumerate(prediction_samples):
+  filename = os.path.basename(prediction_sample)
+  p = os.path.join(PREDICTION_FOLDER, filename)
+  os.rename(os.path.abspath(prediction_sample), p)
+
+# Get a list of all the captcha images we need to process
+#captcha_image_files = glob.glob(os.path.join(CAPTCHA_IMAGE_FOLDER, "*"))
 counts = {}
 
 # loop over the image paths
