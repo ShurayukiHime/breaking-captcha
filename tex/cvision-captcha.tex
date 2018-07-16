@@ -1,0 +1,89 @@
+\documentclass[11pt,a4paper,openright,twoside]{report}
+
+\usepackage[pdftex]{graphicx}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{setspace}
+
+\usepackage{fancyhdr}
+\usepackage{indentfirst}
+\usepackage{newlfont}
+\usepackage{xcolor}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{pred}{rgb}{0.9,0,0}
+\definecolor{light-gray}{gray}{0.95}
+\usepackage{listings}
+\lstset{ 
+	backgroundcolor=\color{light-gray},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}; should come as last argument
+	breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+	breaklines=true,                 % sets automatic line breaking
+	escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+	extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+	keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+	basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+	numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+	numbersep=5pt,                   % how far the line-numbers are from the code
+	%language=XML,                	 % the language of the code
+	commentstyle=\color{mygreen},    % comment style
+	keywordstyle=\color{blue},       % keyword style
+	numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+	stringstyle=\color{pred},
+	rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+	stringstyle=\color{mymauve},     % string literal style
+	tabsize=4		%modify tab space, default too wide
+}
+
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{amsthm}
+
+\oddsidemargin=30pt \evensidemargin=20pt%impostano i margini
+\usepackage[htt]{hyphenat} %per andare a capo nei typescript
+\hyphenation{uni-ver-sity
+	uni-ver-sit-ies
+	how-ever
+	ma-nu-script
+	ma-nu-scripts
+	re-ci-pro-city
+	through-out
+	some-thing
+	al-tern-ate}%serve per la sillabazione: tra parentesi 
+
+\pagestyle{fancy}\addtolength{\headwidth}{20pt}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection \ #1}{}}
+\rhead[\fancyplain{}{\bfseries\leftmark}]{\fancyplain{}{\bfseries\thepage}}
+
+\cfoot{}
+
+\linespread{1.2}                     
+
+\begin{document}
+	
+	\pagenumbering{arabic}                  %mette i numeri arabi
+
+	\include{capitolo1}
+
+
+	\clearpage{\pagestyle{empty}\cleardoublepage}
+
+	
+	\pagestyle{fancy} 
+	\fancyfoot{}                                               
+	\renewcommand{\chaptermark}[1]{\markboth{\appendixname\ \thechapter.\ #1}{}} 
+	\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}         
+	\fancyhead[LE,RO]{\bfseries\thepage}    
+	
+	\fancyhead[RE]{\bfseries\leftmark}    
+	\fancyhead[LO]{\bfseries\rightmark}     
+	\renewcommand{\headrulewidth}{0.3pt} 
+	
+\end{document}
