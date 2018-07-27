@@ -174,63 +174,59 @@ At the beginning of this stage we load the data we processed and add some final 
 
 An additional, bigger partitioning of the training set is performed to obtain the validation set, used to calculate accuracy and loss during training. Finally, we instantiate a \texttt{Sequential} model for our convolutional neural network, adding as a first layer a \texttt{Conv2D} layer applying 20 (5x5) kernels on the 20x20x1 input tensor; the image is padded to obtain an output with the same dimension. Then we have a dropout layer with the \texttt{MaxPooling2D} operation, which gives a 10x10x20 tensor as an output. These two layers are added another time to the network, and followed by a fully-connected layer with activation function \texttt{relu}. Ultimately, the output layer is another fully-connected layer, having 32 neurons and \texttt{softmax} activation function.
 
-With this configuration, the network trained on 29058 examples, and tested on a validation set of 9686 examples. The network performed well as we can see from the accuracy and loss graphs in Figure \ref{fig3-300-acc} and \ref{fig4-300-loss}.
+With this configuration, the network trained on 29058 examples, and tested on a validation set of 9686 examples. The network performed well as we can see from the accuracy and loss graphs in Figure \ref{fig3-300-acc_3} and \ref{fig4-300-loss_3}.
 
 \begin{figure}
 	\centering
 	\begin{minipage}{0.9\textwidth}
 		\centering
-		\includegraphics[width=1\textwidth]{300-acc_1.png}
+		\includegraphics[width=1\textwidth]{300-acc_3.png}
 	\end{minipage}
 	\caption{Graph comparing accuracy of the network performing on training set and validation set.}
-	\label{fig3-300-acc}
+	\label{fig3-300-acc_3}
 \end{figure}
 \begin{figure}
 	\centering
 	\begin{minipage}{0.9\textwidth}
 		\centering
-		\includegraphics[width=1\textwidth]{300-loss_1.png} 
+		\includegraphics[width=1\textwidth]{300-loss_3.png} 
 	\end{minipage}
 	\caption{Graph comparing the loss of the network performing on training set and validation set.}
-	\label{fig4-300-loss}
+	\label{fig4-300-loss_3}
 \end{figure}
 
 To study the behaviour of the network and find some possible improvements, we tested two different aspects: first, we changed the structure of the network, adding more neurons in the hidden layer. Specifically, we moved from 300 to 500 neurons in the fully-connected layer, but the results showed a slight decrease of performance. In fact, even if the network seems to be slightly overfit (the accuracy on the training set being higher than the one on the validation set), adding more neurons strengthened this feature of the network, clearly indicating that we were moving in the wrong direction.
 
 Secondly, we decided to add some more image preprocessing aimed at introducing more variations in the data set. We used the \texttt{ImageDataGenerator} available from Keras to insert random shifts both horizontally and vertically, together with rotations. The shifts could be up to 0.2 of the image dimension, and the rotation up to 15 degrees.
 
-This new model performed quite differently from the original one: the accuracy on the training set dropped considerably, while accuracy on the validation set improved, showing a greater ability of the network to generalize. The same can be said for the loss function, as shown in Figure \ref{fig5-300dig-acc} and \ref{fig6-300dig-loss}. For testing purposes, we considered the performance of \texttt{ImageDataGenerator} also in the network with 500 hidden neurons. The results showed an improvement of performance, which was, nonetheless, poorer than the one obtained with 300 neurons.
+This new model performed quite differently from the original one: the accuracy on the training set dropped considerably, while accuracy on the validation set improved, showing a greater ability of the network to generalize. The same can be said for the loss function, as shown in Figure \ref{fig5-300dig-acc_5} and \ref{fig6-300dig-loss_5}. For testing purposes, we considered the performance of \texttt{ImageDataGenerator} also in the network with 500 hidden neurons. The results showed an improvement of performance, which was, nonetheless, poorer than the one obtained with 300 neurons.
 
 \begin{figure}
 	\centering
 	\begin{minipage}{0.9\textwidth}
 		\centering
-		\includegraphics[width=1\textwidth]{300dig-acc_1.png}
+		\includegraphics[width=1\textwidth]{300dig-acc_5.png}
 	\end{minipage}
 	\caption{Graph comparing accuracy of the network performing on training set and validation set, after the addition of an ImageDataGenerator.}
-	\label{fig5-300dig-acc}
+	\label{fig5-300dig-acc_5}
 \end{figure}
 \begin{figure}
 	\centering
 	\begin{minipage}{0.9\textwidth}
 		\centering
-		\includegraphics[width=1\textwidth]{300dig-loss_1.png} 
+		\includegraphics[width=1\textwidth]{300dig-loss_5.png} 
 	\end{minipage}
 	\caption{Graph comparing the loss of the network performing on training set and validation set, after the addition of an ImageDataGenerator.}
-	\label{fig6-300dig-loss}
+	\label{fig6-300dig-loss_5}
 \end{figure}
 
-We finally tested both networks on the unseen examples. They are 1490 randomly-selected CAPTCHAs, with four characters each, for an overall amount of 5960 predictions. We observed the following results:
+We finally tested both networks on the unseen examples. They are 1490 randomly-selected CAPTCHAs, with four characters each, for an overall amount of 5960 predictions. Tests were repeated with three different networks, with the following average results:
 \begin{itemize}
-	\item The first network made 24 incorrect predictions on the whole dataset. Even if only a single letter was incorrect among the four composing a CAPTCHA, the entire prediction must be discarded.
-	\item The second network made 29 incorrect predictions on the whole dataset. This goes against our previous considerations of a better performance.
+	\item The first network makes an average of 116 incorrect predictions on the whole dataset. Even if only a single letter is incorrect among the four composing a CAPTCHA, the entire prediction must be discarded. We calculated a percentage of errors of 7.8\%.
+	\item The second network makes an average of 126 incorrect predictions on the whole dataset. This goes against our previous considerations of a better performance, as their result is very close. The percentage of error over the whole test set is 8.5\%.
 \end{itemize}
 
-In Figure \ref{fig7-wronglabels} are shown some of the incorrectly labeled images. We analysed the incorrectly labeled CAPCHAs for both networks and found out that:
-\begin{itemize}
-	\item For the first network, 13 over 24 incorrectly labeled characters were \textit{Q} letters which had inside their bounding rectangle some spurious element, probably due to incorrect binarization or cutting.
-	\item We run the same check on the second network and found out a lower number of errors due to \textit{Q} incorrect labeling (11 over 29). A comparison of the two errors for this particular case shows a decrease of incorrect labeling from 54\% to 37\%. The remaining errors were "regular" wrong predictions with an even distribution.
-\end{itemize}
+In Figure \ref{fig7-wronglabels} we can see a few examples of incorrectly labeled images. We analysed some of the wrongly labeled CAPTCHAs and found out that this is often caused by spurious elements present in the letter bounding box, probably due to incorrect thresholding. This issue could be easily addressed in future developments as it doesn't involve the neural network but the previous image processing. 
 
 \begin{figure}
 	\centering
